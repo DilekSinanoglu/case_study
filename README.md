@@ -37,7 +37,7 @@ BEGIN
     WHILE @NumberOfCodes > 0
     BEGIN
         DECLARE @Code NVARCHAR(8) = '';
-		DECLARE @AvailableCharacters NVARCHAR(30) = @CharacterSet; -- Kullanılabilir karakterler listesi
+	DECLARE @AvailableCharacters NVARCHAR(30) = @CharacterSet; -- Kullanılabilir karakterler listesi
         DECLARE @Index INT = 1;
 
         -- Sayı için (SpecialCharacters) rastgele pozisyon belirlenir
@@ -54,14 +54,14 @@ BEGIN
             ELSE
             BEGIN
                 -- Diğer pozisyonlarda rastgele karakter eklenir
-               DECLARE @RandomIndex INT = CEILING(RAND() * LEN(@AvailableCharacters));
-				DECLARE @SelectedChar NVARCHAR(1) = SUBSTRING(@AvailableCharacters, @RandomIndex, 1);
+                DECLARE @RandomIndex INT = CEILING(RAND() * LEN(@AvailableCharacters));
+		DECLARE @SelectedChar NVARCHAR(1) = SUBSTRING(@AvailableCharacters, @RandomIndex, 1);
 
-				-- Seçilen karakteri kodun sonuna eklenir
-				SET @Code = @Code + @SelectedChar;
+		-- Seçilen karakteri kodun sonuna eklenir
+		SET @Code = @Code + @SelectedChar;
 
-				-- Seçilen karakteri kullanılabilir karakterler listesinden çıkartılır
-				SET @AvailableCharacters = STUFF(@AvailableCharacters, CHARINDEX(@SelectedChar, @AvailableCharacters), 1, '');
+		-- Seçilen karakteri kullanılabilir karakterler listesinden çıkartılır
+		SET @AvailableCharacters = STUFF(@AvailableCharacters, CHARINDEX(@SelectedChar, @AvailableCharacters), 1, '');
             END
             SET @Index = @Index + 1;
         END;
@@ -69,15 +69,15 @@ BEGIN
         IF NOT EXISTS (SELECT 1 FROM @GeneratedCodes WHERE Code = @Code) --unique kontrolü
         BEGIN
 	        -- check_code prosedür ile kod kontrol edilir
-			DECLARE @IsValid INT;
-			EXEC [dbo].[check_code] @Code, @IsValid OUT;
+		DECLARE @IsValid INT;
+		EXEC [dbo].[check_code] @Code, @IsValid OUT;
 
-			-- Kod geçerli ise GeneratedCodes tablosuna değeri ekler
-			IF @IsValid = 1
-			BEGIN 
-				INSERT INTO @GeneratedCodes (Code) VALUES (@Code);
-				SET @NumberOfCodes = @NumberOfCodes - 1;
-			END
+		-- Kod geçerli ise GeneratedCodes tablosuna değeri ekler
+		IF @IsValid = 1
+		BEGIN 
+			INSERT INTO @GeneratedCodes (Code) VALUES (@Code);
+			SET @NumberOfCodes = @NumberOfCodes - 1;
+		END
         END;
     END;
 
